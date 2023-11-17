@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+gunicorn = "*"
+psycopg2-binary = "*"
+resend = "*"
+sendgrid = "*"
+django-storages = "*"
+requests = "*"
+python-dotenv = "*"
+crispy-bootstrap4 = "*"
+six = "*"
+boto3 = "*"
+httpx = "*"
+django4-background-tasks = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
