@@ -14,8 +14,7 @@ import requests
 import json
 import sys
 from core.utils import ChoiceEnum
-from django.views.generic import CreateView, ListView, UpdateView
-
+from core.models import UserProfile
 
 class EmailProvider(models.Model):
     provider_name =  models.CharField(max_length=100)
@@ -23,7 +22,7 @@ class EmailProvider(models.Model):
     create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
-        return "{0}".format(provider_name)
+        return "{0}".format(self.provider_name)
 
 
 class CompanyEmailProvider(models.Model):
@@ -37,7 +36,7 @@ class CompanyEmailProvider(models.Model):
         return "{0}: {1}".format(self.user_company, self.email_provider)
 
 
-class Property(models.Model):
+class Product(models.Model):
     user_company = models.ForeignKey('core.Company', on_delete=models.CASCADE)
     property_identifier = models.UUIDField(default=uuid.uuid4)
     property_name = models.CharField(max_length=255)
@@ -73,7 +72,7 @@ class Prospect(models.Model):
 class EmailActivity(models.Model):
     user_company = models.ForeignKey('core.Company', on_delete=models.CASCADE)
     prospect = models.ForeignKey(Prospect, on_delete=models.CASCADE)
-    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    property = models.ForeignKey(Product, on_delete=models.CASCADE)
     email_provider = models.ForeignKey(CompanyEmailProvider, on_delete=models.CASCADE)
     email_send_identifier = models.CharField(max_length=100, null=True, blank=True)
     send_status = models.CharField(max_length=100, null=True, blank=True) #multiple items
@@ -88,8 +87,40 @@ class EmailActivity(models.Model):
 class Conversion(models.Model):
     user_company = models.ForeignKey('core.Company', on_delete=models.CASCADE)
     prospect = models.ForeignKey(Prospect, on_delete=models.CASCADE)
-    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    property = models.ForeignKey(Product, on_delete=models.CASCADE)
     conversion_date = models.DateField()
     create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+
+
+class Campaign(models.Model):
+    campaign_identifier = models.UUIDField(default=uuid.uuid4)
+    userprofile = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,blank=True ,null=True)
+    campaign_summary = models.TextField(null=True, blank=True)
+    user_company = models.ForeignKey('core.Company', on_delete=models.SET_NULL,blank=True ,null=True)
+    prospect = models.ForeignKey(Prospect, on_delete=models.SET_NULL,blank=True ,null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL,blank=True ,null=True) 
+    create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    approval_status = models.BooleanField(default=False)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __str__(self):
+        return "{0}".format(self.campaign_summary)
+    
+
+
+class AIGeneratedEmail(models.Model):
+     campaign_identifier = models.UUIDField(default=uuid.uuid4)
+     campaign_generated_email_template = models.TextField(null=True, blank=True)
+     prospect_email = models.EmailField(null=True, blank=True)
+     create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+   
+
+     def __str__(self) -> str:
+         return self.campaign_identifier
+   
+
+    
+
 

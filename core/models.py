@@ -20,23 +20,25 @@ from django.contrib.auth.models import User, AbstractBaseUser, PermissionsMixin
 from django.contrib.sites.models import Site
 
 
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user_identifier = models.UUIDField(default=uuid.uuid4)
+    active_status = models.BooleanField(default=False)
+    def __str__(self):
+        return "{0}: {1}".format(self.user, self.company)
+
 class Company(models.Model):
     company_identifier = models.UUIDField(default=uuid.uuid4)
     company_name = models.CharField(max_length=250)
     company_website = models.URLField(null=True, blank=True)
     active_status = models.BooleanField(default=False)
+    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return "{0}".format(self.company_name)
+        return self.company_name
 
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    user_identifier = models.UUIDField(default=uuid.uuid4)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, blank=True, null=True)
-    active_status = models.BooleanField(default=False)
 
-    def __str__(self):
-        return "{0}: {1}".format(self.user, self.company)
 
 

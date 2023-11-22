@@ -1,0 +1,22 @@
+{% extends "./base.html" %}
+
+
+{% block contentWrapper %}
+<div class="products">
+<form method="post" action="{% url 'product-add' %}">
+    {% csrf_token %}
+
+    {{form}}
+    
+      
+    <input type="submit" value="create">
+  
+    </form>
+
+   {% for product in user_products %}
+   {{product.property_name}}
+   
+   {% endfor %}
+</div>
+
+{% endblock contentWrapper %}
