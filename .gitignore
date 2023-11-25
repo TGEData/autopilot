@@ -73,6 +73,7 @@ fabric.properties
 .env
 *.pyc
 db.sqlite3_bkp2
+node_modules
 
 
 

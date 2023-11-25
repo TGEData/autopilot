@@ -25,8 +25,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     user_identifier = models.UUIDField(default=uuid.uuid4)
     active_status = models.BooleanField(default=False)
+    slug = models.SlugField(unique=True, blank=True, null=True)
     def __str__(self):
-        return "{0}: {1}".format(self.user, self.company)
+        return "{0}".format(self.user)
 
 class Company(models.Model):
     company_identifier = models.UUIDField(default=uuid.uuid4)

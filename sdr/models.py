@@ -102,23 +102,22 @@ class Campaign(models.Model):
     prospect = models.ForeignKey(Prospect, on_delete=models.SET_NULL,blank=True ,null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,blank=True ,null=True) 
     create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    approval_status = models.BooleanField(default=False)
     updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
+    approval_status = models.BooleanField(default=False)
 
     def __str__(self):
-        return "{0}".format(self.campaign_summary)
+        return "{0}".format(self.id)
     
 
 
 class AIGeneratedEmail(models.Model):
-     campaign_identifier = models.UUIDField(default=uuid.uuid4)
+     campaign = models.ForeignKey(Campaign,on_delete=models.SET_NULL,blank=True ,null=True)
      campaign_generated_email_template = models.TextField(null=True, blank=True)
      prospect_email = models.EmailField(null=True, blank=True)
      create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-   
-
+     
      def __str__(self) -> str:
-         return self.campaign_identifier
+         return self.campaign_generated_email_template
    
 
     

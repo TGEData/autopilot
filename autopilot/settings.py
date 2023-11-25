@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-&96sl=aac)@we70*um4igymm$yrq^m$*xb-!zpjjg%&w9=s6pa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -47,8 +47,11 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap4",
     "background_task",
+    "crispy_tailwind",
     'sdr',
-    "core"
+    "core",
+    "compressor",
+    "django_extensions",
 ]
 
 SITE_ID = 1
@@ -130,32 +133,34 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "node_modules"),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-AWS_ACCESS_KEY_ID = "AKIAJFPJU4PRTHQHAGNA"#os.environ.get("AWS_ACCESS_KEY_ID")#
-AWS_SECRET_ACCESS_KEY = "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" #os.environ.get("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = 'viteai1' #os.environ.get("AWS_STORAGE_BUCKET_NAME")
+#AWS_ACCESS_KEY_ID = "AKIAJFPJU4PRTHQHAGNA"#os.environ.get("AWS_ACCESS_KEY_ID")#
+#AWS_SECRET_ACCESS_KEY = "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" #os.environ.get("AWS_SECRET_ACCESS_KEY")
+#AWS_STORAGE_BUCKET_NAME = 'viteai1' #os.environ.get("AWS_STORAGE_BUCKET_NAME")
 
 #AWS_STORAGE_BUCKET_NAME = 'sibtc-static'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
-AWS_LOCATION = 'traccai'
+#AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+#AWS_S3_OBJECT_PARAMETERS = {
+    #'CacheControl': 'max-age=86400',
+#}
+#AWS_LOCATION = 'traccai'
 
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+#STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 
-DEFAULT_FILE_STORAGE = 'freightsolutions.storage_backends.MediaStorage'
+#STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+#DEFAULT_FILE_STORAGE = 'freightsolutions.storage_backends.MediaStorage'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -168,4 +173,19 @@ LOGIN_REDIRECT_URL = "/dashboard"
 
 LOGOUT_REDIRECT_URL = "login"
 
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+
+CRISPY_TEMPLATE_PACK = "tailwind"
+
+COMPRESS_ROOT = os.path.join(BASE_DIR, "sdr/static")
+
+COMPRESS_ENABLED = True
+
+STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
+
+RESENDEMAIL_API_KEYS = os.environ.get("RESEND_API_KEY")
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+RESEND_SMTP_PORT = 587
+RESEND_SMTP_USERNAME = 'resend'
+RESEND_SMTP_HOST = 'smtp.resend.com'

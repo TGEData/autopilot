@@ -19,6 +19,9 @@ httpx = "*"
 django4-background-tasks = "*"
 langchain = "*"
 openai = "*"
+django-compressor = "*"
+crispy-tailwind = "*"
+django-extensions = "*"
 
 [dev-packages]
 
