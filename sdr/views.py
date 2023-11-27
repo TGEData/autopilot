@@ -14,11 +14,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from background_task import background
-from .generatefollowupemail import generate_emails_leads,send_email
+from .generatefollowupemail import generate_emails_leads,send_email,send_batch_email
 from django.core.mail import EmailMessage, get_connection
 import os
 from . forms import CampaignForm
 from django.urls import reverse
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+
+
 
 
 
@@ -73,6 +79,9 @@ class CreateProspectView(LoginRequiredMixin,CreateView,ListView):
         form = super().get_form(form_class)
         form.fields["user_company"].queryset = Company.objects.filter(userprofile=userprofile)
         return form
+     
+
+
 @login_required
 def invoice_view(request):
      return render(request,"registration/invoice.html")
@@ -207,12 +216,76 @@ def conversation(request):
 
 
 
-##
+@csrf_exempt
 def resend_email_webhook_reciever(request):
+     prospect_emails = Prospect.objects.all()
+    
      if request.method == "POST":
-          print(request.POST)
+         
+          emailresponse = json.loads(request.body.decode('utf-8'))
+          prospect_emails_address = [email.email for email in prospect_emails]
+          #print(prospect_emails_address)
+         
+           
+          if emailresponse['type'] == "email.sent":
+               sent_email = [email for email in emailresponse.get('data')['to'] for email in prospect_emails_address if email in email]
 
-     return HttpResponse()
+               unique_prospect_email =  set(sent_email)
+
+               if len(unique_prospect_email)<=1:
+                    # send email 
+                    send_email()
+               else:
+                    ## send batch email
+                    send_batch_email()
+
+                    
+               
+          
+          elif emailresponse['type'] == "email.opened":
+                # generate customize email using openai and resend to the prospect 
+               opened_emails =[email for email in emailresponse.get('data')['to'] for email in prospect_emails_address if email in email]
+               unique_prospect_email =  set(sent_email)
+
+               if len(unique_prospect_email)<=1:
+                    # send email 
+                    send_email()
+               else:
+                    ## send batch email
+                    send_batch_email()
+
+          
+               
+          elif emailresponse['type'] == "email.clicked":
+                
+                # generate customize email using openai and resend to the prospect 
+                click_emails =[email for email in emailresponse.get('data')['to'] for email in prospect_emails_address if email in email]
+                unique_prospect_email =  set(sent_email)
+
+                if len(unique_prospect_email)<=1:
+                    # send email 
+                    send_email()
+                else:
+                    ## send batch email
+                    send_batch_email()
+
+          elif "email.clicked" in emailresponse['type'] and "email.opened" in emailresponse['type']:
+                opened_click_emails =[email for email in emailresponse.get('data')['to'] for email in prospect_emails_address if email in email]
+                unique_prospect_email =  set(sent_email)
+
+                if len(unique_prospect_email)<=1:
+                    # send email 
+                    send_email()
+                else:
+                    ## send batch email
+                    send_batch_email()
+                
+          else:
+               print("email Delievered")
+
+          
+
+     return JsonResponse({"status":"200 : success"})
      
 
 

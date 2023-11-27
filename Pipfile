@@ -22,6 +22,7 @@ openai = "*"
 django-compressor = "*"
 crispy-tailwind = "*"
 django-extensions = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 

@@ -7,6 +7,7 @@ from langchain.schema import BaseOutputParser
 from background_task import background
 from . import models
 import os
+import resend
 
 from langchain.schema import (
     SystemMessage,
@@ -36,6 +37,16 @@ def send_email(subject,message,recipient_list:list,api_key,host,port,EmailMessag
                   from_email=from_email,
                   connection=connection).send()
     return  {"status": "ok"}
+
+
+def send_batch_email(messages:list,api_key):
+     # send batch email.......
+    resend.api_key = api_key
+    email = resend.Batch.send(messages)
+    print(email)
+
+    return 
+
 
 #@background(schedule=60)
 def generate_emails_leads(openai_api_key=None,
