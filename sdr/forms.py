@@ -8,7 +8,7 @@ class CampaignForm(forms.ModelForm):
     
     class Meta:
         model = Campaign
-        fields = ("campaign_summary","company","prospect","product")
+        fields = ("campaign_summary","user_company","prospect","product")
 
 
 
