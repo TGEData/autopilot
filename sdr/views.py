@@ -230,7 +230,7 @@ def resend_email_webhook_reciever(request):
           if emailresponse['type'] == "email.sent":
                sent_email = [email for email in emailresponse.get('data')['to'] for email in prospect_emails_address if email in email]
 
-               unique_prospect_email =  set(sent_email)
+               unique_prospect_email = set(sent_email)
 
                if len(unique_prospect_email)<=1:
                     # send email 
@@ -239,9 +239,8 @@ def resend_email_webhook_reciever(request):
                     ## send batch email
                     send_batch_email()
 
-                    
-               
-          
+     
+     
           elif emailresponse['type'] == "email.opened":
                 # generate customize email using openai and resend to the prospect 
                opened_emails =[email for email in emailresponse.get('data')['to'] for email in prospect_emails_address if email in email]
@@ -288,7 +287,9 @@ def resend_email_webhook_reciever(request):
      return JsonResponse({"status":"200 : success"})
      
 
-
+def  usersview(request):
+     template_name ="registration/users.html"
+     return render(request,template_name)
 
 
 

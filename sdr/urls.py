@@ -9,7 +9,8 @@ from .views import (dashboard,
                     conversation,
                     resend_email_webhook_reciever,
                     CampaignDetailsView,
-                    send_prospect_email
+                    send_prospect_email,
+                     usersview
                     )
 
 urlpatterns = [
@@ -23,7 +24,8 @@ urlpatterns = [
     path("campaign/add/",create_campaignview,name="campaign-add"),
     path("campaign/details/<int:pk>/",CampaignDetailsView.as_view(),name="campaign-details"),
     path("webhook/reciever/",resend_email_webhook_reciever,name="resend-webhook"),
-    path("send/email/<int:campaign_id>/",send_prospect_email,name="send-email")
+    path("send/email/<int:campaign_id>/",send_prospect_email,name="send-email"),
+    path("users/",usersview,name='users'),
 
 
  
