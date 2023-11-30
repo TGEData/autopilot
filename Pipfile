@@ -23,6 +23,7 @@ django-compressor = "*"
 crispy-tailwind = "*"
 django-extensions = "*"
 django-cors-headers = "*"
+openpyxl = "*"
 
 [dev-packages]
 

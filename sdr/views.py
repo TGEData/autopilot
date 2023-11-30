@@ -17,11 +17,14 @@ from background_task import background
 from .generatefollowupemail import generate_emails_leads,send_email,send_batch_email
 from django.core.mail import EmailMessage, get_connection
 import os
-from . forms import CampaignForm
+from . forms import CampaignForm,UploadProspectForm,ProspectForm
 from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from .utils import clean_upload_data
+from django.contrib import messages
+import shutil
 
 
 
@@ -62,23 +65,74 @@ class CreateProductView(LoginRequiredMixin,CreateView,ListView):
               "user_company"
               ]
 
-class CreateProspectView(LoginRequiredMixin,CreateView,ListView):
-     model = Prospect
-     context_object_name = "user_prospect"
-     success_url = reverse_lazy("prospect-add")
-     template_name = "registration/prospect.html"
-     fields = ["source_identifier","source",
-               "first_name","last_name",
-               "current_title","current_company",
-               "email","photo_url","facebook_url",
-               "twitter_url", "linkedin_url",
-               "user_company"]
+
         
      def get_form(self, form_class=None):
         userprofile = get_object_or_404(UserProfile,user=self.request.user)
         form = super().get_form(form_class)
         form.fields["user_company"].queryset = Company.objects.filter(userprofile=userprofile)
         return form
+     
+
+@login_required 
+def prospect_upload_view(request):
+     userprofile = UserProfile.objects.filter(user=request.user)
+     user_company = Company.objects.filter(userprofile__in=userprofile)
+     user_prospect = Prospect.objects.filter(user_company__in=user_company)
+     prospectcreate_form = ProspectForm(userprofile=userprofile)
+     prospect_uploadform = UploadProspectForm(userprofile=userprofile)
+
+     template_name = "registration/prospect.html"
+
+     db_column = ['source_identifier',
+             'source','first_name',
+             'last_name','current_title',
+             'current_company','email',
+             'photo_url','facebook_url',
+             'twitter_url','linkedin_url'
+             ]
+
+     if request.method == "POST":
+          prospect_uploadform = UploadProspectForm(userprofile,request.POST,request.FILES)
+
+          if prospect_uploadform.is_valid():
+               file = request.FILES['file']
+               company = prospect_uploadform.cleaned_data['user_company']
+               company_obj = get_object_or_404(Company,company_name=company)
+
+               response = clean_upload_data(file,company_obj=company_obj,dbcolumn=db_column,Prospect=Prospect)
+               if response == True:
+                    messages.success(request, "document uploaded successfull")
+                    return render(request,template_name,{'user_prospect':user_prospect,'form':prospectcreate_form,"prospect_uploadform": prospect_uploadform})
+               elif response == False:
+                    messages.error(request, "unable to upload the document you provide please check to make sure it match with our database the document field and try again")
+                    return render(request,template_name,{'user_prospect':user_prospect,'form':prospectcreate_form,"prospect_uploadform": prospect_uploadform})
+                    
+
+     return  HttpResponseRedirect(reverse("prospect-add"))
+
+
+@login_required   
+def create_prospect_view(request):
+     userprofile = UserProfile.objects.filter(user=request.user)
+     user_company = Company.objects.filter(userprofile__in=userprofile)
+     user_prospect = Prospect.objects.filter(user_company__in=user_company)
+     template_name = "registration/prospect.html"
+     
+     if request.method == "POST":
+          prospectcreate_form = ProspectForm(userprofile,request.POST)
+          prospect_uploadform = UploadProspectForm(userprofile,request.POST,request.FILES)
+          if prospectcreate_form.is_valid():
+               prospectcreate_form.save()
+               messages.success(request, "Prospect created successfull")
+               HttpResponseRedirect(reverse("prospect-add"))
+
+     else:
+          prospectcreate_form = ProspectForm(userprofile=userprofile)
+          prospect_uploadform = UploadProspectForm(userprofile=userprofile)
+        
+     return render(request,template_name,{'user_prospect':user_prospect,'form':prospectcreate_form,"prospect_uploadform": prospect_uploadform})
+
      
 
 
@@ -287,7 +341,7 @@ def resend_email_webhook_reciever(request):
      return JsonResponse({"status":"200 : success"})
      
 
-def  usersview(request):
+def usersview(request):
      template_name ="registration/users.html"
      return render(request,template_name)
 
