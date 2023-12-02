@@ -47,9 +47,10 @@ class Product(models.Model):
    
 
     def __str__(self):
-        return "{0}: {1}".format(self.user_company, self.property_name)
+        return self.property_name
 
 
+    
 class Prospect(models.Model):
     user_company = models.ForeignKey('core.Company', on_delete=models.CASCADE)
     prospect_identifier = models.UUIDField(default=uuid.uuid4)
@@ -67,8 +68,20 @@ class Prospect(models.Model):
     create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
+
     def __str__(self):
         return "{0}: {1} {2}".format(self.user_company, self.first_name, self.last_name)
+
+class Contacts(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(default=None)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=True, null=True)
+    prospect = models.ManyToManyField(Prospect)
+    create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class EmailActivity(models.Model):
@@ -97,11 +110,12 @@ class Conversion(models.Model):
 
 
 class Campaign(models.Model):
+
     campaign_identifier = models.UUIDField(default=uuid.uuid4)
     userprofile = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,blank=True ,null=True)
     campaign_summary = models.TextField(null=True, blank=True)
     user_company = models.ForeignKey('core.Company', on_delete=models.SET_NULL,blank=True ,null=True)
-    prospect = models.ForeignKey(Prospect, on_delete=models.SET_NULL,blank=True ,null=True)
+    contacts = models.ForeignKey('Contacts', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL,blank=True ,null=True) 
     create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
@@ -115,7 +129,6 @@ class Campaign(models.Model):
 class AIGeneratedEmail(models.Model):
      campaign = models.ForeignKey(Campaign,on_delete=models.SET_NULL,blank=True ,null=True)
      campaign_generated_email_template = models.TextField(null=True, blank=True)
-     prospect_email = models.EmailField(null=True, blank=True)
      create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
      
      def __str__(self) -> str:

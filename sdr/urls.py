@@ -1,17 +1,25 @@
 from django.urls import path,include
 from .views import (dashboard,
-                    CreateProductView,
-                    CreateCompanyView,
                     create_campaignview,
                     profile_view,
                     invoice_view,
                     conversation,
                     resend_email_webhook_reciever,
-                    CampaignDetailsView,
                     send_prospect_email,
                      usersview,
                      prospect_upload_view,
                      create_prospect_view,
+                     productdelete,
+                        prospectdelete,
+                        campaigndelete,
+                         contactdelete,
+                         companydelete,
+                     ContactView,
+                      CampaignDetailsView,
+                       CreateProductView,
+                       CreateCompanyView,
+                       AIGeneratedEmailView,
+                        
                     )
 
 urlpatterns = [
@@ -28,7 +36,13 @@ urlpatterns = [
     path("send/email/<int:campaign_id>/",send_prospect_email,name="send-email"),
     path("users/",usersview,name='users'),
     path("upload/prospect/",prospect_upload_view,name="prospect-upload"),
+    path("contacts/add/",ContactView.as_view(),name="contact-add"),
+    path("generated/email/update/<int:pk>/",AIGeneratedEmailView.as_view(),name='email-edit'),
 
-
+    path("product/<int:product_id>/delete/",productdelete,name='product-delete'),
+    path("prospect/<int:prospect_id>/delete/",prospectdelete,name='prospect-delete'),
+    path("campaign/<int:campaign_id>/delete/",campaigndelete,name='campaign-delete'),
+    path("contact/<int:contact_id>/delete/",contactdelete,name='contact-delete'),
+    path("company/<int:company_id>/delete/",companydelete,name='company-delete'),
  
 ]

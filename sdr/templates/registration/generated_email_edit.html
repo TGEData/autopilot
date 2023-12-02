@@ -1,0 +1,35 @@
+{% extends "./base.html" %}
+{% load crispy_forms_tags %}
+{% load tailwind_filters %}
+ {% block contentWrapper %}
+<div class="email_edit pt-20 ml-60">
+    <div id="updateProductModal" class=" w-full  md:h-full">
+        <div class="p-4 w-full max-w-2xl h-full md:h-auto">
+           
+            <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+               
+                <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Update Email
+                    </h3>
+                </div>
+               
+                <form class="p-4 md:p-5" method="post">
+                    {% csrf_token %}
+                      <div class="grid gap-4 mb-4 grid-cols-2">
+                           
+                          <div class="col-span-3 sm:col-span-2">
+                            {{form.campaign_generated_email_template|as_crispy_field}}
+                          </div>
+                          
+                          
+                      </div>
+                      <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                          Update Email
+                      </button>
+                  </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contentWrapper %}

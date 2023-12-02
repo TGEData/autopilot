@@ -9,30 +9,75 @@
             <div class="bg-white relative shadow-md sm:rounded-lg  py-5 px-2 ">
 
                 <div class="messages-sample grid gap-4 grid-cols-2 auto-rows-auto divide-x">
-                    <div class=" py-4 px-10 h-80 overscroll-contain whitespace-normal">
+
+                    <div class=" py-4 px-10 h-auto overscroll-contain whitespace-normal">
                     <h1 class="font-semibold pb-5">Campaign Summary:</h1>
                    <p> {{campaign_details.campaign_summary}}</p>
                     <hr class="h-px my-8 bg-gray-400 border-0 dark:bg-gray-700">
+
+                    <!--prospect-->
+                    <h1 class="font-semibold pb-5">Prospects:</h1>
+
+                    {% if campaign_details.contacts.prospect.all %}
+                    {% for prospect  in campaign_details.contacts.prospect.all %}
                     
+                   
+                    
+                   
+                        <ol class="mt-3 divide-y divider-gray-200 dark:divide-gray-700 rounded">
+                            <li>
+                                <a href="#" class="items-center block p-3 sm:flex hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <img class="w-12 h-12 mb-3 me-3 rounded-full sm:mb-0" src="{{prospect.photo_url}}" alt="{{prospect.first_name}} image"/>
+                                    <div class="text-gray-600 dark:text-gray-400">
+                                        <div class="text-base font-normal"><span class="font-medium text-gray-900 dark:text-white mx-12">{{prospect.first_name}} </span> <span class="font-medium text-gray-900 dark:text-white">{{prospect.last_name}}</span> <span class="font-medium text-gray-900 dark:text-white">{{prospect.email}}</span></div>
+                                       
+                                    </div>
+                                </a>
+                            </li>
+ 
+                        </ol>
+                        {% endfor %}
+
+                        {% endif %}
+                    
+
+
+                    <!--prospect-->
                     </div>
+
                     <div class="py-4 px-10 ">
                         <h1 class="font-semibold pb-5">AI Generated Email:</h1>
                         <hr class="h-px my-8 bg-gray-400 border-0 dark:bg-gray-700">
                         {% for ai_email in campaign_details.aigeneratedemail_set.all  %}
                         <pre class="text-justify whitespace-pre-wrap">{{ai_email|safe}}</pre>
                         {% endfor %}
-                        
+  
                     </div>
+
+                    
+
                 </div>
-                <div class="pt-2">
-                    <button type="button" data-modal-target="popup-modal" data-modal-toggle="popup-modal" class="text-white bg-blue-600 dark:bg-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-blue-700" >Approved Campaign</button>
+                <div class="pt-2 grid grid-cols-2 gap-x-28">
+                    <button type="button" data-modal-target="popup-modal" data-modal-toggle="popup-modal" class="text-white bg-blue-600 dark:bg-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-blue-700 w-44" >Approved Campaign</button>
+                    {% for ai_email in campaign_details.aigeneratedemail_set.all  %}
+                    <a href="{% url "email-edit" ai_email.id %}">
+                    <button id="updateEmailButton" data-modal-target="updateEmailModal" data-modal-toggle="updateEmailModal" class="text-white bg-blue-600 dark:bg-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-blue-700 w-44" type="button">
+                        Update Email
+                        </button>
+                    </a>
+                    {% endfor %}
                 </div>
+
+                
 
             </div>
 
 
 
        
+
+
+
             <div id="popup-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                 <div class="relative p-4 w-full max-w-md max-h-full">
                     <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -54,6 +99,9 @@
                     </div>
                 </div>
             </div>
+
+
+
        
 </div>
 
