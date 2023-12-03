@@ -25,6 +25,7 @@ import json
 from .utils import clean_upload_data
 from django.contrib import messages
 import shutil
+from django.core.paginator import Paginator
 
 
 
@@ -50,6 +51,7 @@ class CreateCompanyView(LoginRequiredMixin,CreateView,ListView):
 
 
 class CreateProductView(LoginRequiredMixin,CreateView,ListView):
+     paginate_by = 10
      model = Product
      context_object_name = "user_products"
      success_url = reverse_lazy("product-add")
@@ -122,6 +124,10 @@ def create_prospect_view(request):
      user_company = Company.objects.filter(userprofile__in=userprofile)
      user_prospect = Prospect.objects.filter(user_company__in=user_company)
      template_name = "registration/prospect.html"
+     paginator = Paginator(user_prospect,8)  # Show 25 contacts per page.
+     page_number = request.GET.get("page")
+     prospect_page_obj = paginator.get_page(page_number)
+     
      
      if request.method == "POST":
           prospectcreate_form = ProspectForm(userprofile,request.POST)
@@ -136,13 +142,13 @@ def create_prospect_view(request):
           prospectcreate_form = ProspectForm(userprofile=userprofile)
           prospect_uploadform = UploadProspectForm(userprofile=userprofile)
         
-     return render(request,template_name,{'user_prospect':user_prospect,
-                                          'form':prospectcreate_form,
-                                          "prospect_uploadform": prospect_uploadform})
+     return render(request,template_name,{'form':prospectcreate_form,
+                                          "prospect_uploadform": prospect_uploadform,"prospect_page_obj":prospect_page_obj})
 
      
 
 class ContactView(LoginRequiredMixin,CreateView,ListView):
+     paginate_by = 10
      model = Contacts
      form_class = ContactForm
      context_object_name = "contacts_obj"
@@ -178,10 +184,12 @@ def profile_view(request,username):
 def create_campaignview(request):
      template_name = "registration/campaign.html"
      userprofile = get_object_or_404(UserProfile,user=request.user)
-
      userprofileform = UserProfile.objects.filter(user=request.user)
-     
-     campaign_object_data = Campaign.objects.filter(userprofile=userprofile)
+     campaign_object_data = Campaign.objects.filter(userprofile__in=userprofileform)
+
+     paginator = Paginator(campaign_object_data,8)  # Show 25 contacts per page.
+     page_number = request.GET.get("page")
+     campaign_page_obj = paginator.get_page(page_number)
      
      if request.method == "POST":
           form = CampaignForm(userprofileform,request.POST)
@@ -226,17 +234,18 @@ def create_campaignview(request):
                                   property_description=ai_property_description,
                                   company_name=ai_company_name,
                                   company_website=ai_company_website,
-                                  sales_lead_username=request.user,
-                                  campaign=campaign_instance,
+                                  sales_lead_username=request.user.username,
+                                  campaign=campaign_instance.id,
                                  
                                    )
-              
+
                messages.success(request, "Campaign created successfull")
+               HttpResponseRedirect(reverse("campaign-add"))
 
      else:
          form = CampaignForm(userprofileform)
 
-     return render(request,template_name,{"form":form,"user_campaigns":campaign_object_data})
+     return render(request,template_name,{"form":form,"user_campaigns":campaign_page_obj})
           
 
 

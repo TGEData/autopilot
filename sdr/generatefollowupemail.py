@@ -9,6 +9,7 @@ from . import models
 import os
 import resend
 
+
 from langchain.schema import (
     SystemMessage,
     HumanMessage,
@@ -89,12 +90,12 @@ def generate_emails_leads(openai_api_key=None,
    response_email = chat_model(messages)
 
    # save the generated email to the data base
-
+   campaigns_data = models.Campaign.objects.get(pk=campaign)
    models.AIGeneratedEmail.objects.create(
-    campaign = campaign,
+    campaign = campaigns_data,
     campaign_generated_email_template = response_email.content,
    )
-   return
+   
 
 
 
