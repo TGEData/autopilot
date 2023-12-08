@@ -74,6 +74,7 @@ fabric.properties
 *.pyc
 db.sqlite3_bkp2
 node_modules
+sdr/static/CACHE/css
 
 
 

@@ -4,6 +4,7 @@ from .models import Campaign,Product,Prospect,Conversion,EmailActivity,EmailProv
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column,Field
+from django.contrib.auth.models import User
 
 
 
@@ -71,6 +72,11 @@ class ContactForm(forms.ModelForm):
 
     
        
+class UserEditForm(forms.ModelForm):
+    
+    class Meta:
+        model = User
+        fields = ("email","first_name","last_name","username")
 
 
 

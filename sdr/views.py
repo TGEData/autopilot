@@ -17,7 +17,7 @@ from background_task import background
 from .generatefollowupemail import generate_emails_leads,send_email,send_batch_email
 from django.core.mail import EmailMessage, get_connection
 import os
-from . forms import CampaignForm,UploadProspectForm,ProspectForm,ContactForm
+from . forms import CampaignForm,UploadProspectForm,ProspectForm,ContactForm,UserEditForm
 from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -26,7 +26,8 @@ from .utils import clean_upload_data
 from django.contrib import messages
 import shutil
 from django.core.paginator import Paginator
-
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 
 # Create your views here.
@@ -175,10 +176,38 @@ def invoice_view(request):
 
 
 @login_required
-def profile_view(request,username):
+def profile_view(request):
      template_name ="registration/profile.html"
+     if request.method == "POST":
+          profileform = UserEditForm(request.POST,instance=request.user)
+          passwordchangeform = PasswordChangeForm(user=request.user)
 
-     return render(request,template_name)
+          if profileform.is_valid():
+               profileform.save()
+               HttpResponseRedirect(reverse("profile-view"))
+               messages.success(request, "Profile updated successfull")
+     else:
+          profileform = UserEditForm(instance=request.user)
+          passwordchangeform = PasswordChangeForm(user=request.user)
+     
+     return render(request,template_name,{"profileform":profileform,"passwordchangeform":passwordchangeform})
+
+@login_required
+def password_update(request):
+     template_name ="registration/profile.html"
+     if request.method == "POST":
+          profileform = UserEditForm(instance=request.user)
+          passwordchangeform = PasswordChangeForm(user=request.user, data=request.POST)
+          if passwordchangeform.is_valid():
+             passwordchangeform.save()
+             update_session_auth_hash(request,  passwordchangeform.user)
+             HttpResponseRedirect(reverse("profile-view"))
+             messages.success(request, "Password updated successfull")
+     else:
+          profileform = UserEditForm(instance=request.user)
+          passwordchangeform = PasswordChangeForm(user=request.user)
+     
+     return render(request,template_name,{"profileform":profileform,"passwordchangeform":passwordchangeform})
 
 @login_required
 def create_campaignview(request):
@@ -228,7 +257,7 @@ def create_campaignview(request):
                #ai_prospect_current_company = user_prospect.current_company
                #ai_prospect_email = user_prospect.email
 
-               generate_emails_leads(openai_api_key="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",
+               generate_emails_leads(openai_api_key=os.environ.get('openai_api_key'),
                                   campaign_summary=campaign_summary,
                                   property_name=ai_property_name,
                                   property_description=ai_property_description,
@@ -266,8 +295,7 @@ def send_prospect_email(request,campaign_id):
      subject = campaign.campaign_summary
      messsage = f"{aigenerated_email.campaign_generated_email_template}"
      for emails in prospect_emails:
-      
-      
+      print(subject)
       send_email(subject=subject,
               message=messsage,
                recipient_list=[emails],
@@ -441,3 +469,8 @@ def companydelete(request,company_id):
      return  HttpResponseRedirect(reverse("company-add"))
 
 #### delete views..........................
+
+@login_required
+def close_account(request,user_id):
+     get_object_or_404(UserProfile,user=user_id).delete()
+     return  HttpResponseRedirect(reverse("login"))

@@ -1,7 +1,223 @@
 {% extends "./base.html" %}
+{% load crispy_forms_tags %}
+{% load tailwind_filters %}
 
  {% block contentWrapper %}
-<div class="profile">
+<div class="profile pt-10">
+    {% if messages %}
+    {% for message in messages  %}
+    
+     <div id="alert-3" class="flex items-center p-4 mb-4 text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+        </svg>
+        <span class="sr-only">Info</span>
+        <div class="ms-3 text-sm font-medium">
+         {{message}}
+        </div>
+        <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700" data-dismiss-target="#alert-3" aria-label="Close">
+          <span class="sr-only">Close</span>
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+          </svg>
+        </button>
+      </div>
+    
+    {% endfor %}
+   
+    {% endif %}
+
+
+    <h1 class="text-2xl">Profile</h1>
+     <!--enail-->
+    <div class="grid grid-cols-1 gap-4">
+        <div class="bg-white rounded py-6 px-6 shadow-md">
+            <!--profile-->
+            
+        <div class="py-4 px-4 grid grid-cols-2 gap-40">
+
+            <div class="profile-pic">
+                <div class="flex items-center gap-4">
+                    <img class="w-14 h-14 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="">
+                    <div class="font-medium dark:text-white">
+                        <div>{{request.user.username}}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{request.user.email}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-right"><Button  id="updatebutton" data-modal-target="updateprofile" data-modal-toggle="updateprofile" class="text-white bg-blue-600 dark:bg-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-blue-700 w-28">Edit</Button></div>
+
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 w-9/12">
+            <div class="py-6">
+                <p>FirstName</p>
+                <p class="capitalize">{{request.user.first_name}}</p>
+            </div>
+            <div class="py-6">
+                <p class="capitalize">LastName</p>
+                <p class="capitalize">{{request.user.last_name}}</p>
+            </div>
+            <div class="py-6">
+                <p>Username</p>
+                <p>{{request.user}}</p>
+            </div>
+
+            <div class="py-6">
+                <p>Email</p>
+                <p class="capitalize">{{request.user.email}}</p>
+            </div>
+          </div>
+        
+
+             <!--profile-->
+        </div>
+
+        <div class="bg-white rounded shadow-md h-60">
+            <div class="header-title w-full bg-gray-200 rounded py-6 px-6">
+                <h1 class="font-semibold text-2xl">My Email Addresses</h1>
+                <p>  You can use the following email addresses to sign in to your account and also to reset your password if you ever forget it.</p>
+            </div>
+           <div class="content w-36 rounded py-6 px-6 grid grid-cols-2 ">
+
+            <div class="bg-green-400 py-4 px-4 h-14 w-14 rounded-full ">
+                <svg  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>          
+            </div>
+            <div class="px-4 py-4 w-10"><p>{{request.user.email}}</p></div>
+           
+           </div>
+        </div>
+        <!--enail-->
+
+        <!--security-->
+        <h1 class="text-2xl">Security</h1>
+
+        <div class="bg-white rounded py-6 px-6 shadow-md grid grid-cols-2">
+            <div class="">
+                <h1 class="text-2xl">Password</h1>
+                <p>Last changed 2 hours ago</p>
+            </div>
+            <div class="text-right"><Button  id="updatepassbtn" data-modal-target="updatepassword" data-modal-toggle="updatepassword" class="text-white bg-blue-600 dark:bg-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-blue-700 w-44">Change Password</Button></div>
+
+
+        </div>
+        <!--security-->
+
+
+        <div class="bg-white rounded shadow-md ">
+            <div class="header-title w-full bg-gray-200 rounded py-6 px-6">
+                <h1 class="font-semibold text-2xl">Close Account</h1>
+                <p>  Permanently delete all the data associated with your account and the apps you use.</p>
+            </div>
+          
+            <p class="text-center py-5">Closing your Account will permanently delete all your account information and you will no longer be able to use any of the Tracc Crm services.</p>
+
+            <div class="text-center py-5"><a href="{% url "close-account" request.user.id %}"><Button class="text-white bg-red-600 dark:bg-red-500 font-medium rounded-lg text-sm px-5 py-2.5 hover:bg-red-500 w-44">Close Account</Button><a/></div>
+           
+        
+        </div>
+        <!--enail-->
+
+    </div>
+
+
+    <!---update profile-->
+
+    <!-- Main modal -->
+<div id="updateprofile" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+    <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+        <!-- Modal content -->
+        <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+              
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="updateprofile">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form action="{% url "profile-view"%}" method="post">
+                {% csrf_token %}
+                <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                    <div>
+                        {{profileform.first_name|as_crispy_field}}
+                    </div>
+                    <div>
+                        {{profileform.last_name|as_crispy_field}}
+                    </div>
+                    <div>
+                        {{profileform.email|as_crispy_field}}
+                    </div>
+                    <div>
+                        {{profileform.username|as_crispy_field}}
+                    </div>
+                    
+                   
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button type="submit" class="text-white bg-blue-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                        Update profile
+                    </button>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!--update profile-->
+
+
+
+
+    
+    <!---update password-->
+
+    <!-- Main modal -->
+<div id="updatepassword" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+    <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+        <!-- Modal content -->
+        <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+              
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="updatepassword">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form action="{% url "password-update" %}" method="post">
+                {% csrf_token %}
+                <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                    <div>
+                       {{ passwordchangeform.old_password|as_crispy_field}}
+                    </div>
+                    <div>
+                        {{ passwordchangeform.new_password1|as_crispy_field}}
+                    </div>
+                    <div>
+                        {{ passwordchangeform.new_password2|as_crispy_field}}
+                    </div>
+                    
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button type="submit" class="text-white bg-blue-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                        Update password
+                    </button>
+                   
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!--update password-->
+    
   
 </div>
 {% endblock contentWrapper %}

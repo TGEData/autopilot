@@ -14,6 +14,8 @@ from .views import (dashboard,
                         campaigndelete,
                          contactdelete,
                          companydelete,
+                         password_update,
+                         close_account,
                      ContactView,
                       CampaignDetailsView,
                        CreateProductView,
@@ -26,7 +28,7 @@ urlpatterns = [
     path("dashboard/",dashboard,name='user-dashboard'),
     path("invioce/", invoice_view,name="invoice"),
     path("conversation/",conversation,name="conversation-inbox"),
-    path("profile/user/<username>/",profile_view,name="profile-view"),
+    path("profile/user/",profile_view,name="profile-view"),
     path("product/add/",CreateProductView.as_view(),name="product-add"),
     path("company/add/",CreateCompanyView.as_view(),name='company-add'),
     path("prospect/add/",create_prospect_view,name="prospect-add"),
@@ -38,11 +40,12 @@ urlpatterns = [
     path("upload/prospect/",prospect_upload_view,name="prospect-upload"),
     path("contacts/add/",ContactView.as_view(),name="contact-add"),
     path("generated/email/update/<int:pk>/",AIGeneratedEmailView.as_view(),name='email-edit'),
-
+    path("password/update/",password_update,name='password-update'),
     path("product/<int:product_id>/delete/",productdelete,name='product-delete'),
     path("prospect/<int:prospect_id>/delete/",prospectdelete,name='prospect-delete'),
     path("campaign/<int:campaign_id>/delete/",campaigndelete,name='campaign-delete'),
     path("contact/<int:contact_id>/delete/",contactdelete,name='contact-delete'),
     path("company/<int:company_id>/delete/",companydelete,name='company-delete'),
+    path("close/account/<user_id>/",close_account,name='close-account')
  
 ]
